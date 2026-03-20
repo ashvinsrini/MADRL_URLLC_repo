@@ -34,15 +34,14 @@ This repository contains the reference code for the core implementation of the p
 
 If you find this repository useful in your research, please cite our paper:
 
-@INPROCEEDINGS{11174624,
-  author={Srinivasan, Ashvin and Zhang, Junshan and Tirkkonen, Olav},
-  booktitle={2025 IEEE 101st Vehicular Technology Conference (VTC2025-Spring)}, 
-  title={Asynchronous Multi-Agent Reinforcement Learning for Scheduling in Subnetworks}, 
-  year={2025},
-  volume={},
-  number={},
-  pages={1-6},
-  keywords={Wireless communication;Vehicular and wireless technologies;Simulation;Interference;Ultra reliable low latency communication;Deep reinforcement learning;Resource management;Reliability;Vehicle dynamics;Long short term memory;6G;In-X subnetworks;URLLC;Dynamic Spectrum Allocation;Non-Stationary MDP;Multi-agent Reinforcement Learning;Explainable AI},
-  doi={10.1109/VTC2025-Spring65109.2025.11174624}}
+```bibtex
+@inproceedings{11174624,
+  author    = {Srinivasan, Ashvin and Zhang, Junshan and Tirkkonen, Olav},
+  booktitle = {2025 IEEE 101st Vehicular Technology Conference (VTC2025-Spring)},
+  title     = {Asynchronous Multi-Agent Reinforcement Learning for Scheduling in Subnetworks},
+  year      = {2025},
+  pages     = {1--6},
+  doi       = {10.1109/VTC2025-Spring65109.2025.11174624}
+}
 
 
