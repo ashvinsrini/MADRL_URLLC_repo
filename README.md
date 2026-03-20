@@ -12,13 +12,13 @@ This repository contains the reference code for the core implementation of the p
 
 \### Main scripts
 
-\- `LSTM\_predict.py` : trains and evaluates the interference-power prediction module.
+\- `LSTM_predict.py` : trains and evaluates the interference-power prediction module.
 
-\- `SINR\_cdf\_CI\_runner.py` : generates the SINR CDF results with confidence intervals.
+\- `SINR_cdf_CI_runner.py` : generates the SINR CDF results with confidence intervals.
 
-\- `DRL\_async\_ci\_train.py` : runs the  DRL training/evaluation pipeline.
+\- `DRL_async_ci_train.py` : runs the  DRL training/evaluation pipeline.
 
-\- `eval\_from\_saved\_results.py` : quickly regenerates the reported figures from the provided saved result files.
+\- `eval_from_saved_results.py` : quickly regenerates the reported figures from the provided saved result files.
 
 
 
