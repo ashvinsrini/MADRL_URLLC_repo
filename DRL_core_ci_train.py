@@ -155,7 +155,8 @@ def generate_matrix(N, J):
 
     return matrix
 
-
+# Lightweight K=1 adaptation of the URLLC-aware quantization procedure
+# used for the reference implementation.
 def return_bin_descrete_action(N, J, uhat):
     u = np.zeros((N, J))
 
@@ -448,7 +449,12 @@ def run_one_training(realization, lstm_model, run_seed: int):
                 )
 
                 next_states.append(next_state_k)
-
+            # This script provides a reference core implementation based on a generic
+            # synchronous state representation with previous actions included
+            # (state_dim = 2*N*J). Other variants may be implemented with minor code
+            # changes. In particular, the asynchronous variant uses
+            # only the predicted SINR matrix as the state and updates one active agent
+            # per slot.
             for k in range(M):
                 if replay_buffers[k].size() > BATCH_SIZE:
                     agents[k].train(replay_buffers[k], t, BATCH_SIZE)
