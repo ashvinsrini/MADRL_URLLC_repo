@@ -538,7 +538,7 @@ def save_bler_runs_npz(out_path: Path, bler_runs):
 
 def plot_bler_cdf_ci(x_grid, cdf_mean, cdf_lo, cdf_hi, out_png: Path):
     plt.figure(figsize=[6, 4])
-    plt.semilogx(x_grid, cdf_mean, linewidth=2.0, label="Async proposed approach BLER CDF")
+    plt.semilogx(x_grid, cdf_mean, linewidth=2.0, label="BLER CDF")
     plt.fill_between(x_grid, cdf_lo, cdf_hi, alpha=0.20, label="95% CI")
     plt.grid(True, which="both", linestyle="--", alpha=0.5)
     plt.xlabel("Err_prob")
