@@ -1,6 +1,6 @@
 
 """
-Async 8-agent DRL pipeline converted from the notebook, with 10-run BLER CDF
+DRL 8 agents pipeline converted from the notebook, with 10-run BLER CDF
 confidence intervals.
 
 Requirements already assumed available in your environment:
