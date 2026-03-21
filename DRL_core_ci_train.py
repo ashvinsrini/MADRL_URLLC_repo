@@ -1,6 +1,6 @@
 
 """
-DRL 8 agents pipeline converted from the notebook, with 10-run BLER CDF
+DRL 8 agents core pipeline converted from the notebook, with 10-run BLER CDF
 confidence intervals.
 
 Requirements already assumed available in your environment:
@@ -11,7 +11,7 @@ Requirements already assumed available in your environment:
 This script does:
 1) Loads the pretrained LSTM used for one-step SINR prediction.
 2) Builds the wireless environment.
-3) Trains the 8-agent async DRL system for NUM_RUNS independent runs.
+3) Trains the 8-agent  DRL system for NUM_RUNS independent runs.
 4) Reproduces only the notebook's final BLER CDF plot, now with 95% CI.
 5) Saves:
    - BLER CDF plot
