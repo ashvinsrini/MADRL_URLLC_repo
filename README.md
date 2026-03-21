@@ -16,7 +16,7 @@ This repository contains the reference code for the core implementation of the p
 
 \- `SINR_cdf_CI_runner.py` : generates the SINR CDF results with confidence intervals.
 
-\- `DRL_async_ci_train.py` : runs the  DRL training/evaluation pipeline.
+\- `DRL_core_ci_train.py` : runs the  DRL core training/evaluation pipeline.
 
 \- `eval_from_saved_results.py` : quickly regenerates the reported figures from the provided saved result files.
 
