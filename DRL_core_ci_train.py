@@ -44,7 +44,7 @@ from Utils.LSTM import LSTMModel
 # User-configurable parameters
 # ============================================================
 
-OUTPUT_DIR = "async_8agent_bler_ci_outputs"
+OUTPUT_DIR = "core_8agent_bler_ci_outputs"
 NUM_RUNS = 5
 BASE_SEED = 42
 FIX_ENVIRONMENT_ACROSS_RUNS = True
@@ -68,7 +68,7 @@ MAX_ACTION = 1.0
 
 # Plot / CI parameters
 CI_XGRID_POINTS = 400
-PLOT_FILENAME = "async_bler_cdf_ci.png"
+PLOT_FILENAME = "core_bler_cdf_ci.png"
 RAW_BLER_FILENAME = "bler_runs_raw.npz"
 CI_DATA_FILENAME = "bler_cdf_ci_data.npz"
 
