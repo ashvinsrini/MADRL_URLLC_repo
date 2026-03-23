@@ -71,21 +71,32 @@ markevery_map = {
 }
 
 alpha_map = {
-    "async": 0.20,
-    "sync": 0.20,
-    "async_nourllc": 0.20,
-    "sync_nourllc": 0.20,
-    "ctde": 0.20,
-    "greedy": 0.18,
+    "async": 0.24,
+    "sync": 0.24,
+    "async_nourllc": 0.24,
+    "sync_nourllc": 0.24,
+    "ctde": 0.24,
+    "greedy": 0.26,
 }
 
+bler = data["bler_cdf"]
+
 for key in curve_order_1:
-    c = data["error_probability_cdf"]["curves"][key]
+    c = bler[key]
 
     x = arr(c["x"])
-    y = arr(c["y"])
-    y_lo = arr(first_existing(c, ["ci_lower", "lower"]))
-    y_hi = arr(first_existing(c, ["ci_upper", "upper"]))
+    y = arr(first_existing(c, ["center", "y"]))
+    y_lo = arr(first_existing(c, ["lower", "ci_lower"]))
+    y_hi = arr(first_existing(c, ["upper", "ci_upper"]))
+
+    label = c.get("label", {
+        "async": "Async",
+        "sync": "Sync",
+        "async_nourllc": "Async(no URLLC)",
+        "sync_nourllc": "Sync(no URLLC)",
+        "ctde": "CTDE",
+        "greedy": "Greedy",
+    }[key])
 
     line, = ax1.plot(
         x,
@@ -93,7 +104,7 @@ for key in curve_order_1:
         markers[key],
         markevery=markevery_map[key],
         linewidth=2.0,
-        label=c["label"],
+        label=label,
         zorder=3,
     )
 
@@ -103,7 +114,7 @@ for key in curve_order_1:
         y_hi,
         color=line.get_color(),
         alpha=alpha_map[key],
-        linewidth=1.0,
+        linewidth=0.8,
         edgecolor=line.get_color(),
         zorder=1,
     )
@@ -115,7 +126,11 @@ ax1.legend(loc="lower right", fontsize=12)
 ax1.grid(True, which="both", alpha=0.4)
 
 plt.tight_layout()
-plt.savefig(os.path.join(RESULTS_DIR, "error_cdf1_ci_from_json.png"), dpi=300, bbox_inches="tight")
+plt.savefig(
+    os.path.join(RESULTS_DIR, "error_cdf1_ci_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig1)
 
 
@@ -124,59 +139,51 @@ plt.close(fig1)
 # ------------------------------------------------------------
 fig2, ax2 = plt.subplots()
 
-curve_order_2 = [
-    "F_gamma",
-    "F_gamma_bar",
-    "F_gamma_over_gamma_bar_given_gamma_bar",
-]
+curve_order_2 = ["blue", "orange", "green"]
+sinr = data["sinr_cdf"]
+sinr_meta = sinr["metadata"]
 
 for key in curve_order_2:
-    c = data["sinr_cdf"]["curves"][key]
+    c = sinr[key]
 
-    line_x = arr(first_existing(c, ["line_x", "x"]))
-    line_y_for_plot = arr(first_existing(c, ["line_y_for_log_plot", "line_y", "y"]))
-    x_grid = arr(first_existing(c, ["x_grid"]))
-    ci_lower_clip = arr(first_existing(c, ["ci_lower_clipped_for_visible_plot", "ci_lower_plot", "ci_lower", "lower"]))
-    ci_upper_plot = arr(first_existing(c, ["ci_upper_for_log_plot", "ci_upper_plot", "ci_upper", "upper"]))
-    visible_mask = np.asarray(first_existing(c, ["visible_mask"])).astype(bool)
-
-    label_txt = c.get("label", c.get("label_math", key))
-    if isinstance(label_txt, str) and not label_txt.startswith("$"):
-        plot_label = f"${label_txt}$"
-    else:
-        plot_label = label_txt
+    x = arr(c["x"])
+    center_plot = arr(first_existing(c, ["center_plot", "center", "y"]))
+    lower_plot = arr(first_existing(c, ["lower_plot", "lower", "ci_lower"]))
+    upper_plot = arr(first_existing(c, ["upper_plot", "upper", "ci_upper"]))
 
     line, = ax2.plot(
-        line_x,
-        line_y_for_plot,
-        lw=2.0,
-        label=plot_label
+        x,
+        center_plot,
+        lw=2.2,
+        label=f"${c['label']}$" if not str(c["label"]).startswith("$") else c["label"]
     )
+
+    visible_mask = np.isfinite(center_plot) & np.isfinite(lower_plot) & np.isfinite(upper_plot)
 
     ax2.fill_between(
-        x_grid,
-        ci_lower_clip,
-        ci_upper_plot,
+        x,
+        lower_plot,
+        upper_plot,
         where=visible_mask,
         color=line.get_color(),
-        alpha=0.16,
+        alpha=0.18,
     )
-
-plot_limits = data["sinr_cdf"]["plot_limits"]
-xmin, xmax = plot_limits["xlim"]
-ymin_plot, ymax_plot = plot_limits["ylim"]
 
 ax2.set_xlabel("SINR(dB)", fontsize=14)
 ax2.set_ylabel("CDF(log scale)", fontsize=14)
 ax2.set_yscale("log")
-ax2.set_xlim(float(xmin), float(xmax))
-ax2.set_ylim(float(ymin_plot), float(ymax_plot))
+ax2.set_xlim(float(sinr_meta["xmin"]), float(sinr_meta["xmax"]))
+ax2.set_ylim(float(sinr_meta["ymin_plot"]), 1.0)
 ax2.grid(True, which="major", linestyle="-", alpha=0.45)
 ax2.grid(True, which="minor", linestyle="-", alpha=0.18)
 ax2.legend(fontsize=13, loc="upper right", framealpha=0.9)
 
 plt.tight_layout()
-plt.savefig(os.path.join(RESULTS_DIR, "SINR_CDF_ci_from_json.png"), dpi=300, bbox_inches="tight")
+plt.savefig(
+    os.path.join(RESULTS_DIR, "SINR_CDF_ci_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig2)
 
 
@@ -207,11 +214,11 @@ axs[0].fill_between(
     alpha=0.42,
     zorder=1
 )
-axs[0].set_yscale('log')
-axs[0].set_xlabel('Epoch')
-axs[0].set_ylabel('Loss(log scale)')
-axs[0].grid(True, which='major', linestyle='-', alpha=0.45)
-axs[0].grid(True, which='minor', linestyle='-', alpha=0.15)
+axs[0].set_yscale("log")
+axs[0].set_xlabel("Epoch")
+axs[0].set_ylabel("Loss(log scale)")
+axs[0].grid(True, which="major", linestyle="-", alpha=0.45)
+axs[0].grid(True, which="minor", linestyle="-", alpha=0.15)
 
 t = arr(intrf["x"])
 target = arr(first_existing(intrf, ["target"]))
@@ -219,8 +226,8 @@ pred_plot = arr(first_existing(intrf, ["predicted_mean", "mean", "y"]))
 pred_lo_vis = arr(first_existing(intrf, ["ci_lower_plot", "ci_lower", "lower"]))
 pred_hi_vis = arr(first_existing(intrf, ["ci_upper_plot", "ci_upper", "upper"]))
 
-axs[1].plot(t, target, label='target', lw=1.6, zorder=3)
-axs[1].plot(t, pred_plot, label='predicted', lw=1.6, zorder=4)
+axs[1].plot(t, target, label="target", lw=1.6, zorder=3)
+axs[1].plot(t, pred_plot, label="predicted", lw=1.6, zorder=4)
 axs[1].fill_between(
     t,
     pred_lo_vis,
@@ -229,15 +236,19 @@ axs[1].fill_between(
     zorder=2
 )
 
-axs[1].set_xlabel('Time Steps')
-axs[1].set_ylabel('Interference power (dBm)')
+axs[1].set_xlabel("Time Steps")
+axs[1].set_ylabel("Interference power (dBm)")
 axs[1].set_ylim(-68, -17)
-axs[1].legend(loc='upper right')
-axs[1].grid(True, which='major', linestyle='-', alpha=0.45)
-axs[1].grid(True, which='minor', linestyle='-', alpha=0.15)
+axs[1].legend(loc="upper right")
+axs[1].grid(True, which="major", linestyle="-", alpha=0.45)
+axs[1].grid(True, which="minor", linestyle="-", alpha=0.15)
 
 plt.tight_layout()
-plt.savefig(os.path.join(RESULTS_DIR, "LSTM_perf_intpower_1_ci_from_json.png"), dpi=300, bbox_inches='tight')
+plt.savefig(
+    os.path.join(RESULTS_DIR, "LSTM_perf_intpower_1_ci_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig3)
 
 
@@ -257,18 +268,22 @@ best_loss = sens["best_loss"]
 vline_x = sens["vline_x"]
 hline_y = sens["hline_y"]
 
-plt.plot(k_values, test_loss, marker='o', linewidth=2, markersize=7, label='Test loss')
+plt.plot(k_values, test_loss, marker="o", linewidth=2, markersize=7, label="Test loss")
 plt.fill_between(k_values, lower, upper, alpha=0.2)
-plt.scatter(best_k, best_loss, s=90, zorder=5, label=fr'Elbow point at $k=10$')
-plt.axvline(vline_x, linestyle='--', linewidth=1)
-plt.axhline(hline_y, linestyle='--', linewidth=1)
+plt.scatter(best_k, best_loss, s=90, zorder=5, label=fr"Elbow point at $k=10$")
+plt.axvline(vline_x, linestyle="--", linewidth=1)
+plt.axhline(hline_y, linestyle="--", linewidth=1)
 plt.xticks(k_values)
-plt.xlabel(r'LSTM Input window size $k$')
-plt.ylabel('Test loss')
-plt.grid(True, linestyle='--', alpha=0.5)
+plt.xlabel(r"LSTM Input window size $k$")
+plt.ylabel("Test loss")
+plt.grid(True, linestyle="--", alpha=0.5)
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(RESULTS_DIR, "lstm_sensitivity_plot_from_json.png"), dpi=300, bbox_inches='tight')
+plt.savefig(
+    os.path.join(RESULTS_DIR, "lstm_sensitivity_plot_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig4)
 
 
@@ -361,7 +376,11 @@ fig5.legend(
 )
 
 plt.tight_layout(rect=[0, 0.03, 1, 1])
-plt.savefig(os.path.join(RESULTS_DIR, "sensitivity_error_probability_from_json.png"), dpi=300, bbox_inches="tight")
+plt.savefig(
+    os.path.join(RESULTS_DIR, "sensitivity_error_probability_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig5)
 
 
@@ -461,7 +480,11 @@ formatter_d.set_powerlimits((0, 0))
 ax.yaxis.set_major_formatter(formatter_d)
 
 plt.tight_layout()
-plt.savefig(os.path.join(RESULTS_DIR, "sensitivity_bler_devices_velocity_from_json.png"), dpi=300, bbox_inches="tight")
+plt.savefig(
+    os.path.join(RESULTS_DIR, "sensitivity_bler_devices_velocity_from_json.png"),
+    dpi=300,
+    bbox_inches="tight"
+)
 plt.close(fig6)
 
 print(f"Saved all figures to: {RESULTS_DIR}")
